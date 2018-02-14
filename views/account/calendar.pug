@@ -1,0 +1,24 @@
+extends ../layout
+
+block content
+  .page-header
+    h3 Calendar
+
+  p when do you want to be available for bookings?
+  P Please select directly on the calendar
+  p To deselect, click on an event
+
+  #calendar
+
+  p Do you want this week to repeat? If so, submit the number of weeks. This feature is TBD.
+  form(method='POST', action='/account/calendarRepeat')
+    input(type='hidden', name='_csrf', value=_csrf)
+    .form-group
+      label(class='col-sm-2 control-label', for='name') Weeks
+      .col-sm-8
+        input.form-control(type='number', weeks='weeks', id='weeks', required= true, min= '0', max= '52' )
+    .form-group
+      .col-sm-offset-2.col-sm-8
+        button.btn.btn-primary(type='submit')
+          i.fa.fa-envelope
+          | Submit

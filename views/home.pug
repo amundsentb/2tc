@@ -1,0 +1,49 @@
+extends layout
+
+block content
+
+  h1 2tc!
+  p.lead Expanding on boilerplate.
+  hr
+  .container
+    .row
+      .col-sm-6
+        each user in users
+          script.
+            var user = !{JSON.stringify(user)}
+          .card
+            img.card-img-top(src=user.profile.picture, href='users/' + user._id, alt='Card image cap', height='150', width='100')
+            .card-body
+              h4.card-title(href='users/' + user._id) #{user.profile.name} 'users/' + #{user._id}
+              h6.card-subtitle.mb-2
+                each qual in user.profile.quals.split(',')
+                  a.badge.badge-primary(href='#')=qual
+              p.card-text #{user.profile.about}
+              p.card-text #{user.profile.interests}
+              a.btn.btn-primary(href='/users/' + user._id) Go somewhere
+
+
+      .col-sm-6
+        .card
+          img.card-img-top(src='images/Upwards.jpg', alt='Card image cap')
+          .card-body
+            h4.card-title Earn Cash money!
+            p.card-text
+              | Some quick example text to build on the card title and make up the bulk of the card&apos;s content.
+            a.btn.btn-primary(href='#') Go somewhere
+
+        .card
+          img.card-img-top(src='images/Upwards.jpg', alt='Card image cap')
+          .card-body
+            h4.card-title Learn for less!
+            p.card-text#hithere
+              | Some quick example text to build on the card title and make up the bulk of the card&apos;s content.
+            a.btn.btn-primary(href='#') Go somewhere
+
+        .card
+          img.card-img-top(src='images/Upwards.jpg', alt='Card image cap')
+          .card-body
+            h4.card-title Increase your attractiveness to the other sex!
+            p.card-text
+              | Some quick example text to build on the card title and make up the bulk of the card&apos;s content.
+            a.btn.btn-primary(href='#') Go somewhere

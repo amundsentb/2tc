@@ -1,0 +1,171 @@
+extends ../layout
+
+block content
+  .page-header
+    h3 #{user.profile.name}
+    #badgeList
+      p green: expert, yellow, professional, blue: competent.
+
+
+  form.form-horizontal(action='/account/profile', method='POST')
+    input(type='hidden', name='_csrf', value=_csrf)
+    .form-group
+      label.col-sm-3.control-label(for='email') Email
+      .col-sm-7
+        input.form-control(type='email', name='email', id='email', value=user.email)
+    .form-group
+      label.col-sm-3.control-label(for='name') Name
+      .col-sm-7
+        input.form-control(type='text', name='name', id='name', value=user.profile.name)
+    .form-group
+      label.col-sm-3.control-label Gender
+      .col-sm-6
+        label.radio.col-sm-3
+          input(type='radio', checked=user.profile.gender=='male', name='gender', value='male', data-toggle='radio')
+          span Male
+        label.radio.col-sm-3
+          input(type='radio', checked=user.profile.gender=='female', name='gender', value='female', data-toggle='radio')
+          span Female
+        label.radio.col-sm-3
+          input(type='radio', checked=user.profile.gender=='other', name='gender', value='other', data-toggle='radio')
+          span Other
+    .form-group
+      label.col-sm-3.control-label(for='location') Location
+      .col-sm-7
+        input.form-control(type='text', name='location', id='location', value=user.profile.location)
+    .form-group
+      label.col-sm-3.control-label(for='website') Website
+      .col-sm-7
+        input.form-control(type='text', name='website', id='website', value=user.profile.website)
+    .form-group
+      label.col-sm-3.control-label(for='interests') Interests
+      .col-sm-7
+        textarea#interests.form-control(rows='3' name='interests') #{user.profile.interests}
+    .form-group
+      label.col-sm-3.control-label(for='about') About
+      .col-sm-7
+        textarea#about.form-control(rows='3' name='about') #{user.profile.about}
+    .form-group
+      label.col-sm-3.control-label Gravatar
+      .col-sm-4
+        img(src=user.gravatar(), class='profile', width='100', height='100')
+    .form-group
+
+    .form-group
+      .col-sm-offset-3.col-sm-4
+        button.btn.btn.btn-primary(type='submit')
+          i.fa.fa-pencil
+          | Update Profile
+
+  .page-header
+    h3 Profile picture and diplomas
+
+  .row.justify-content-between
+    .col-sm-6
+      form.form-horizontal(action='/uploadpic', method='POST', enctype='multipart/form-data', id='picform')
+        .form-group
+          .col-sm-offset-3.col-sm-4
+            input(type='file', accept='image/*', style='display:none', id='fileElem', form='picform', name='avatar')
+            img#fileSelect.mx-auto.img-fluid.d-block(src=user.profile.picture || 'User-Default.jpg', alt='avatar', width='250', length='250')
+        .form-group
+          .col-sm-offset-3.col-sm-4
+            button.btn.btn-primary(type='submit')
+              i.fa.fa-pencil
+              | Uppdate profile pic
+
+    .col-sm-6
+      each dip, index in user.profile.diplomas
+        button(id = 'deletePDF' + index) delete
+          i.fa.fa-trash
+
+        div
+          h6(id = 'pdfHeader' + index) Default
+        canvas(id = 'the-canvas' + index)
+
+      form.form-horizontal(action='/uploadpdf', method='POST', enctype='multipart/form-data', id='pdfform')
+        .form-group
+          .col-sm-offset-3.col-sm-4
+            label(for = 'description') Please enter a type or short description
+            input(type = 'text', name = 'description', maxlength = '40')
+            input(type='file', accept='.pdf', id='pdfElem', form='pdfform', name='pdf')
+        .form-group
+          .col-sm-offset-3.col-sm-4
+            button.btn.btn-primary(type='submit' id = 'pdfSubmitBtn')
+              i.fa.fa-pencil
+              | Submit Diploma
+
+
+  .page-header
+    h3 Calendar and Qualifications
+  .row.justify-content-between
+    .col-sm-6
+      a.btn.btn-info(href='/account/calendar', role='button') Calendar
+    .col-sm-6
+      a.btn.btn-info(href='/account/quals', role='button') Qualifications
+
+
+  .page-header
+    h3 Change Password
+
+  form.form-horizontal(action='/account/password', method='POST')
+    input(type='hidden', name='_csrf', value=_csrf)
+    .form-group
+      label.col-sm-3.control-label(for='password') New Password
+      .col-sm-7
+        input.form-control(type='password', name='password', id='password')
+    .form-group
+      label.col-sm-3.control-label(for='confirmPassword') Confirm Password
+      .col-sm-7
+        input.form-control(type='password', name='confirmPassword', id='confirmPassword')
+    .form-group
+      .col-sm-offset-3.col-sm-4
+        button.btn.btn-primary(type='submit')
+          i.fa.fa-lock
+          | Change Password
+
+  .page-header
+    h3 Delete Account
+
+  form.form-horizontal(action='/account/delete', method='POST')
+    .form-group
+      p.col-sm-offset-3.col-sm-4 You can delete your account, but keep in mind this action is irreversible.
+      input(type='hidden', name='_csrf', value=_csrf)
+      .col-sm-offset-3.col-sm-4
+        button.btn.btn-danger(type='submit')
+          i.fa.fa-trash
+          | Delete my account
+
+  .page-header
+    h3 Linked Accounts
+  .form-horizontal
+    .form-group
+      .col-sm-offset-3.col-sm-4
+        if user.instagram
+          p: a.text-danger(href='/account/unlink/instagram') Unlink your Instagram account
+        else
+          p: a(href='/auth/instagram') Link your Instagram account
+      .col-sm-offset-3.col-sm-4
+        if user.google
+          p: a.text-danger(href='/account/unlink/google') Unlink your Google account
+        else
+          p: a(href='/auth/google') Link your Google account
+      .col-sm-offset-3.col-sm-4
+        if user.facebook
+          p: a.text-danger(href='/account/unlink/facebook') Unlink your Facebook account
+        else
+          p: a(href='/auth/facebook') Link your Facebook account
+      .col-sm-offset-3.col-sm-4
+        if user.twitter
+          p: a.text-danger(href='/account/unlink/twitter') Unlink your Twitter account
+        else
+          p: a(href='/auth/twitter') Link your Twitter account
+      .col-sm-offset-3.col-sm-4
+        if user.github
+          p: a.text-danger(href='/account/unlink/github') Unlink your GitHub account
+        else
+          p: a(href='/auth/github') Link your GitHub account
+      .col-sm-offset-3.col-sm-4
+        if user.linkedin
+          p: a.text-danger(href='/account/unlink/linkedin') Unlink your LinkedIn account
+        else
+          p: a(href='/auth/linkedin') Link your LinkedIn account

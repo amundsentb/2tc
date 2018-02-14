@@ -1,0 +1,19 @@
+extends layout
+
+block content
+
+  h1 2tc inbox!
+  hr
+
+  .container
+    .row
+      .col-sm-6
+
+        table#zeTable.table.table-hover
+          thead
+            tr
+              th(scope="col") Sender
+              th(scope="col") Subject
+              th(scope="col") Date
+          tbody
+            tr

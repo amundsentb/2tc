@@ -1,0 +1,36 @@
+navbar.navbar-expand-md.navbar-light.bg-lights
+  a.navbar-brand(href='#')
+    img(src='/images/logo.png' width='50' length='50')
+    | &nbsp; air2t
+  button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navbarNav', aria-controls='navbarNav', aria-expanded='false', aria-label='Toggle navigation')
+    span.navbar-toggler-icon
+  #navbarNav.collapse.navbar-collapse
+    ul.navbar-nav.mr-auto
+      li.nav-item(class=(title === 'Home') ? 'active' : undefined)
+        a.nav-link(href='/') Home
+      li.nav-item(class=(title === 'API Examples') ? 'active' : undefined)
+        a.nav-link(href='/api') API Examples
+      li.nav-item(class=(title === 'Contact') ? 'active' : undefined)
+        a.nav-link(href='/contact') Contact
+      li.nav-item
+        a.nav-link(href='/status') Status
+    ul.navbar-nav
+      if !user
+        li.nav-item(class=(title === 'Login') ? 'active' : undefined)
+          a.nav-link(href='/login') Login
+        li.nav-item(class=(title === 'Create Account') ? 'active' : undefined)
+          a.nav-link(href='/signup') Create Account
+      else
+        li.nav-item(class=(title === 'inbox') ? 'active' : undefined)
+          a.nav-link(href='/inbox') Inbox
+        li.nav-item(class=(title === 'Messages') ? 'active' : undefined)
+          if user.profile.picture
+            img(src='../' + user.profile.picture || user.profile.picture, width='50', length='50')
+          else
+            img(src=user.gravatar(60))
+          span= user.profile.name || user.email || user.id
+          i.caret
+        li.nav-item(class=(title === 'My account') ? 'active' : undefined)
+          a.nav-link(href='/account') My account
+        li.nav-item(class=(title === 'Logout') ? 'active' : undefined)
+          a.nav-link(href='/logout') Logout

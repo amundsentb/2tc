@@ -1,0 +1,47 @@
+extends layout
+
+block content
+
+  h1 2tc!
+  hr
+  .container
+    .row
+      .col-sm-6
+
+        p #{userinfo.profile.gender}
+        p #{userinfo.profile.location}
+        p #{userinfo.email}
+        img#userinfopic(alt='avatar', width='250', length='250')
+
+        p #{userinfo.profile.website}
+        p #{userinfo.profile.about}
+        p #{userinfo.profile.interests}
+        p #{userinfo.profile.quals}
+
+        button.btn.btn-primary(type='button', data-toggle='modal', data-target='#exampleModal', data-whatever='@getbootstrap') Send a message to #{userinfo.profile.name}
+        #exampleModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='exampleModalLabel', aria-hidden='true')
+            .modal-dialog(role='document')
+              .modal-content
+                .modal-header
+                  h5#exampleModalLabel.modal-title New message
+                  button.close(type='button', data-dismiss='modal', aria-label='Close')
+                    span(aria-hidden='true') &times;
+                .modal-body
+                  form(action='/sendMessage', method='post')
+                    .form-group
+                      label.col-form-label(for='subject') Subject:
+                      input#subject.form-control(type='text', name='subject')
+                      input#recipientID(type='hidden', name='recipientID')
+                      input#senderID(type='hidden', name='senderID')
+                    .form-group
+                      label.col-form-label(for='message-text') Message:
+                      textarea#message-text.form-control(name='messageBody')
+                    button.btn.btn-secondary(type='button', data-dismiss='modal') Close
+                    button.btn.btn-primary(type='submit') Send message
+
+
+      .col-sm-6
+
+        #pdfPara
+
+        #calendar
