@@ -41,3 +41,11 @@ exports.getUserAndMessages = (req, res) => {
   });
 
 }
+
+exports.putMessageSeen = (req, res) => {
+  Message.findByIdAndUpdate(req.params.id, {seen: req.params.seenBool}, {new:true},
+  function(err, message) {
+    if (err) return res.status(500).send("There was a problem updating message.");
+    res.status(200).send(message);
+  });
+}

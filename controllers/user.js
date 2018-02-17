@@ -268,13 +268,6 @@ exports.postRemoveAvailableSlot = (req,res) => {
 
       }
     }
-
-
-    // for (var i = 0; i<user.calendar.free.length;i++) {
-    //   if (user.calendar.free[i].id === calEvent._id) {
-    //     user.profile.diplomas.splice(i, 1 );
-    //   }
-    // }
     user.save((err) => {
       if (err) {
         return next(err);

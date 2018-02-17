@@ -313,9 +313,25 @@ function addInboxRow(tableID, message, i) {
 
   // Insert a row in the table at row index 0
   var newRow = tableRef.insertRow(1);
-  if (message.message.seen === false) 
+
+
   newRow.addEventListener('click', function() {
     if (message.click === !true) {
+      fetch("/message/" + message.message._id + "/seen/" + true,
+      {
+          method: "PUT",
+          headers: {
+            'Accept': 'application/json',
+            'Authorization': 'whatever-you-want',
+            'Content-Type': 'application/json'
+          },
+          credentials: "same-origin"
+      })
+      .then(checkStatus)
+      .then(() => console.log('message updated!!!'));
+
+      newRow.setAttribute('class', 'table-default');
+
       message.message.seen = true;
       br = document.createElement('br');
       paragraph = document.createElement('p');
@@ -339,10 +355,11 @@ function addInboxRow(tableID, message, i) {
 
   // Append a text node to the cell
   var sender = document.createTextNode(message.message.sender);
+
   senderCell.appendChild(sender);
 
   var subjectCell = newRow.insertCell(1);
-  subjectCell.id = 'subjectCellId';
+
 
   // Append a text node to the cell
   var subject = document.createTextNode(message.message.subject);
@@ -353,6 +370,21 @@ function addInboxRow(tableID, message, i) {
   // Append a text node to the cell
   var date = document.createTextNode(message.message.createdAt);
   dateCell.appendChild(date);
+
+  if (message.message.seen === false) {
+    newRow.setAttribute('class', 'table-primary');
+
+  }
+}
+
+function checkStatus(response) {
+  if (response.status >= 200 && response.status < 300) {
+    return response
+  } else {
+    var error = new Error(response.statusText)
+    error.response = response
+    throw error
+  }
 }
 
 function postPDF(url, canvasID) {
