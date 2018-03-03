@@ -3,11 +3,11 @@ const User = require('../models/User');
 const Message = require('../models/Message');
 
 exports.sendMessage = (req,res) => {
-  console.log(req.body);
   Message.create({
     subject: req.body.subject,
     body: req.body.messageBody,
     seen: false,
+    senderName: req.body.senderName,
     sender: req.body.senderID,
     recipient: req.body.recipientID
   }, function(err, message) {
@@ -24,7 +24,6 @@ exports.getInbox = (req,res) => {
     recipient: req.user._id
   }).
   exec(function(err, messages) {
-    console.log(messages);
     res.render('inbox', {
       messages: messages
 

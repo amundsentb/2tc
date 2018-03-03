@@ -4,6 +4,7 @@ const messageSchema = new mongoose.Schema({
   subject: String,
   body: String,
   seen: Boolean,
+  senderName: String,
   sender: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User"

@@ -208,6 +208,7 @@ $( document ).ready(function() {
         modal.find('.modal-body input');
         modal.find('#recipientID').val(res[0]._id);
         modal.find('#senderID').val(res[1]._id);
+        modal.find('#senderName').val(res[1].profile.name);
 
       });
 
@@ -226,6 +227,7 @@ $( document ).ready(function() {
         pdfPara.appendChild(canvasPara);
         postPDF('../' + res[0].profile.diplomas[dip].source, dip);
       };
+
       $('#calendar').fullCalendar({
 
         events: res[0].calendar.free,
@@ -258,11 +260,11 @@ $( document ).ready(function() {
                 alert('Please log in or sign up to book a spot.');
                 return
               } else {
-                alert('ok!');
+                alert('ok! Request to book Sent!');
                 delete calEvent.source;
                 bookingRequest = {
                   userInfo: response,
-                  user: res,
+                  user: res[0],
                   slot: calEvent
                 };
                 fetch("/account/bookSlot",
@@ -276,6 +278,8 @@ $( document ).ready(function() {
                     body: JSON.stringify(bookingRequest),
                     credentials: "same-origin"
                 });
+                // bookingMessage =
+                // sendMessage(sender, recipient, subject, message)
               }
             }
           });
@@ -315,46 +319,13 @@ function addInboxRow(tableID, message, i) {
   var newRow = tableRef.insertRow(1);
 
 
-  newRow.addEventListener('click', function() {
-    if (message.click === !true) {
-      fetch("/message/" + message.message._id + "/seen/" + true,
-      {
-          method: "PUT",
-          headers: {
-            'Accept': 'application/json',
-            'Authorization': 'whatever-you-want',
-            'Content-Type': 'application/json'
-          },
-          credentials: "same-origin"
-      })
-      .then(checkStatus)
-      .then(() => console.log('message updated!!!'));
-
-      newRow.setAttribute('class', 'table-default');
-
-      message.message.seen = true;
-      br = document.createElement('br');
-      paragraph = document.createElement('p');
-      zeMessage = document.createTextNode(message.message.body);
-      zeMessage.id = 'zeM' + i;
-      subjectCell.appendChild(br);
-      subjectCell.appendChild(paragraph);
-      subjectCell.appendChild(br);
-      subjectCell.appendChild(zeMessage);
-      message.click = true;
-    } else {
-      subjectCell.removeChild(br);
-      subjectCell.removeChild(paragraph);
-      subjectCell.removeChild(zeMessage);
-      message.click = false;
-    }
-  })
 
   // Insert a cell in the row at index 0
   var senderCell = newRow.insertCell(0);
 
   // Append a text node to the cell
-  var sender = document.createTextNode(message.message.sender);
+  var sender = document.createTextNode(message.message.senderName);
+
 
   senderCell.appendChild(sender);
 
@@ -368,13 +339,113 @@ function addInboxRow(tableID, message, i) {
   var dateCell = newRow.insertCell(2);
 
   // Append a text node to the cell
-  var date = document.createTextNode(message.message.createdAt);
+  var date = document.createTextNode(moment(message.message.createdAt).format("llll"));
   dateCell.appendChild(date);
 
   if (message.message.seen === false) {
     newRow.setAttribute('class', 'table-primary');
 
   }
+
+  newRow.addEventListener('click', function() {
+    if (message.click === !true) {
+      fetch("/message/" + message.message._id + "/seen/" + true,
+      {
+          method: "PUT",
+          headers: {
+            'Accept': 'application/json',
+            'Authorization': 'whatever-you-want',
+            'Content-Type': 'application/json'
+          },
+          credentials: "same-origin"
+      })
+      .then(checkStatus);
+      newRow.setAttribute('class', 'table-default');
+
+      message.message.seen = true;
+      br = document.createElement('br');
+      paragraph = document.createElement('p');
+
+
+
+      if (message.message.subject === 'Request to book available slot!' && message.message.sender === '00000000000000000000000a') {
+
+        modifiedMessage = message.message.body.split('*');
+
+        zeMessage1 = document.createTextNode(modifiedMessage[0]);
+        zeMessage2 = document.createElement('a');
+        console.log(message.message.body);
+        userLinkName = document.createTextNode(modifiedMessage[7]);
+        zeMessage2.appendChild(userLinkName);
+        zeMessage2.setAttribute('href', modifiedMessage[1]);
+        zeMessage3 = document.createTextNode(modifiedMessage[2]);
+        slotStart = document.createTextNode(moment(modifiedMessage[3]).format("dddd, MMMM Do YYYY, h:mm:ss a"));
+        zeMessage4 = document.createTextNode(modifiedMessage[4]);
+        slotEnd = document.createTextNode(moment(modifiedMessage[5]).format("dddd, MMMM Do YYYY, h:mm:ss a"));
+        zeMessage5 = document.createTextNode(modifiedMessage[6]);
+        subjectCell.appendChild(br);
+        subjectCell.appendChild(paragraph);
+        subjectCell.appendChild(br);
+        subjectCell.appendChild(zeMessage1);
+        subjectCell.appendChild(zeMessage2);
+        subjectCell.appendChild(zeMessage3);
+        subjectCell.appendChild(slotStart);
+        subjectCell.appendChild(zeMessage4);
+        subjectCell.appendChild(slotEnd);
+        subjectCell.appendChild(zeMessage5);
+
+        message.click = true;
+
+        btnAcceptBooking = document.createElement('btn');
+        btnAcceptBooking.innerHTML = 'confirm';
+        btnAcceptBooking.setAttribute('class', 'btn btn-primary');
+        subjectCell.appendChild(br);
+        subjectCell.appendChild(btnAcceptBooking);
+        btnRefuseBooking = document.createElement('btn');
+        btnRefuseBooking.innerHTML = 'refuse';
+        btnRefuseBooking.setAttribute('class', 'btn btn-primary');
+        subjectCell.appendChild(btnRefuseBooking);
+
+      } else {
+        zeMessage = document.createTextNode(message.message.body);
+        subjectCell.appendChild(br);
+        subjectCell.appendChild(paragraph);
+        subjectCell.appendChild(br);
+        subjectCell.appendChild(zeMessage);
+        message.click = true;
+
+
+      }
+
+    } else {
+      if (message.message.subject === 'Request to book available slot!' && message.message.sender === '00000000000000000000000a') {
+        subjectCell.removeChild(br);
+        subjectCell.removeChild(paragraph);
+        subjectCell.removeChild(br);
+        subjectCell.removeChild(zeMessage1);
+        subjectCell.removeChild(zeMessage2);
+        subjectCell.removeChild(zeMessage3);
+        subjectCell.removeChild(slotStart);
+        subjectCell.removeChild(zeMessage4);
+        subjectCell.removeChild(slotEnd);
+        subjectCell.removeChild(zeMessage5);
+
+        subjectCell.removeChild(br);
+        subjectCell.removeChild(btnAcceptBooking);
+
+        subjectCell.removeChild(btnRefuseBooking);
+        message.click = false;
+
+      } else {
+        subjectCell.removeChild(br);
+        subjectCell.removeChild(paragraph);
+        subjectCell.removeChild(zeMessage);
+        message.click = false;
+
+      }
+    }
+  })
+
 }
 
 function checkStatus(response) {

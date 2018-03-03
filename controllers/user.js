@@ -3,7 +3,7 @@ const crypto = bluebird.promisifyAll(require('crypto'));
 const nodemailer = require('nodemailer');
 const passport = require('passport');
 const User = require('../models/User');
-
+const Message = require('../models/Message');
 /**
  * GET /login
  * Login page.
@@ -290,6 +290,28 @@ exports.getUserDetailPage = (req, res) => {
 }
 
 exports.postBookSlot = (req, res) => {
+  Message.create({
+    subject: 'Request to book available slot!',
+    body: 'Dear sir. '
+    + '*/users/' + req.user._id + '* has asked to book your time on *'
+    + req.body.slot.start + '*'
+    + ' to *' + req.body.slot.end + '*'
+    + '.'
+    + ' If you would like to accept this request to booking.\
+    Please confirm\
+    by clicking confirm below. Otherwise click refuse. \
+    You are advised to\
+    carefully vet the person you accept to meet.*'
+    + req.body.userInfo.profile.name,
+    seen: false,
+    sender: '00000000000000000000000a',
+    senderName: 'Air2t',
+    recipient: req.body.user._id
+  }, function(err, message) {
+    if (err) {
+      console.error(err);
+    }
+  });
 
 
   res.render('userpage', {
