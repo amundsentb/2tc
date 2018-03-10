@@ -290,6 +290,7 @@ exports.getUserDetailPage = (req, res) => {
 }
 
 exports.postBookSlot = (req, res) => {
+  console.log(req.body.slot._id);
   Message.create({
     subject: 'Request to book available slot!',
     body: 'Dear sir. '
@@ -302,7 +303,9 @@ exports.postBookSlot = (req, res) => {
     by clicking confirm below. Otherwise click refuse. \
     You are advised to\
     carefully vet the person you accept to meet.*'
-    + req.body.userInfo.profile.name,
+    + req.body.userInfo.profile.name
+    + '*'
+    + req.body.slot._id,
     seen: false,
     sender: '00000000000000000000000a',
     senderName: 'Air2t',
@@ -318,6 +321,22 @@ exports.postBookSlot = (req, res) => {
     title: 'User detail',
     userinfo: req.body.userInfo
   })
+}
+
+exports.putBookingBooked = (req, res) => {
+  User.findById(req.user._id, function(err, user) {
+    var bookingID = req.params.id;
+    var foundBooking = user.calendar.free.findIndex(booking => booking._id == bookingID);
+    user.calendar.free[foundBooking].booked = req.params.bookedBool;
+    user.save(function(err, updatedUser) {
+      if (err) {
+        return next(err);
+      }
+      req.flash('success', { msg: 'Your booking has been updated accordingly.' });
+
+      res.redirect(303, '/inbox');
+    });
+  });
 }
 
 /**

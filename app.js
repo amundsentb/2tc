@@ -136,6 +136,12 @@ app.use((req, res, next) => {
   else if (req.path.indexOf('/message/') === 0)  {
     next();
   }
+  else if (req.path.indexOf('/booking/') === 0)  {
+    next();
+  }
+  else if (req.path === '/inbox') {
+    next();
+  }
 
 
 
@@ -204,6 +210,8 @@ app.post('/account/bookSlot', passportConfig.isAuthenticated, userController.pos
 app.get('/inbox', passportConfig.isAuthenticated, messageController.getInbox);
 app.get('/getUserAndMessages', passportConfig.isAuthenticated, messageController.getUserAndMessages);
 app.put('/message/:id/seen/:seenBool', passportConfig.isAuthenticated, messageController.putMessageSeen)
+
+app.put('/booking/:id/booked/:bookedBool', passportConfig.isAuthenticated, userController.putBookingBooked)
 
 
 

@@ -15,5 +15,9 @@ const messageSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
+messageSchema.virtual('id').get(function() {
+  return this._id.toString();
+});
+
 var Message = mongoose.model('Message', messageSchema);
 module.exports = Message;

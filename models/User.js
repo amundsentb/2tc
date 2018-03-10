@@ -31,18 +31,14 @@ const userSchema = new mongoose.Schema({
       source: String,
       description: String
     }]
-      // booked: [{
-      //   _id: false,
-      //   time: [Date],
-      //   booker: mongoose.Schema.Types.ObjectId
-      // }]
   },
   calendar: {
     _id: false,
     free: [{
       title: String,
       start: Date,
-      end: Date
+      end: Date,
+      booked: Boolean
     }]
   }
 }, { timestamps: true });

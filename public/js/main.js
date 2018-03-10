@@ -125,26 +125,45 @@ $( document ).ready(function() {
       return response.json();
     })
     .then(function(response) {
+
+      var bookedEvents = response.calendar.free.filter(event => event.booked === true);
+      var freeEvents = response.calendar.free.filter(event => !~bookedEvents.indexOf(event));
+      bookedEvents.map(event => event.title = 'booked!');
+      bookedEvents.map(event => event.editable = false);
+      console.log(bookedEvents);
+      console.log(freeEvents);
+
       $('#calendar').fullCalendar({
-        events: response.calendar.free,
+
+        eventSources: [{
+          events: freeEvents
+        },
+        {
+          events: bookedEvents,
+          color: 'red'
+        }],
         eventClick: function(calEvent, jsEvent, view) {
-          deleteEvent = confirm('Do you want to remove the slot?')
-          if (deleteEvent) {
-            delete calEvent.source;
-            fetch("/account/removeAvailableSlot",
-            {
-                method: "POST",
-                headers: {
-                  'Accept': 'application/json',
-                  'Authorization': 'whatever-you-want',
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(calEvent),
-                credentials: "same-origin"
-            })
-            .then(function(){
-              window.location.reload(true);
-            });
+          if (calEvent.editable !== false) {
+            deleteEvent = confirm('Do you want to remove the slot?')
+            if (deleteEvent) {
+              delete calEvent.source;
+              fetch("/account/removeAvailableSlot",
+              {
+                  method: "POST",
+                  headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'whatever-you-want',
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify(calEvent),
+                  credentials: "same-origin"
+              })
+              .then(function(){
+                window.location.reload(true);
+              });
+            }
+          } else {
+            alert('no can do hombre. Talk to the person directly pls');
           }
         },
         weekNumberCalculation: "ISO",
@@ -347,7 +366,7 @@ function addInboxRow(tableID, message, i) {
 
   }
 
-  newRow.addEventListener('click', function() {
+  newRow.addEventListener('click', function(e) {
     if (message.click === !true) {
       fetch("/message/" + message.message._id + "/seen/" + true,
       {
@@ -371,10 +390,9 @@ function addInboxRow(tableID, message, i) {
       if (message.message.subject === 'Request to book available slot!' && message.message.sender === '00000000000000000000000a') {
 
         modifiedMessage = message.message.body.split('*');
-
+        console.log(modifiedMessage);
         zeMessage1 = document.createTextNode(modifiedMessage[0]);
         zeMessage2 = document.createElement('a');
-        console.log(message.message.body);
         userLinkName = document.createTextNode(modifiedMessage[7]);
         zeMessage2.appendChild(userLinkName);
         zeMessage2.setAttribute('href', modifiedMessage[1]);
@@ -385,7 +403,6 @@ function addInboxRow(tableID, message, i) {
         zeMessage5 = document.createTextNode(modifiedMessage[6]);
         subjectCell.appendChild(br);
         subjectCell.appendChild(paragraph);
-        subjectCell.appendChild(br);
         subjectCell.appendChild(zeMessage1);
         subjectCell.appendChild(zeMessage2);
         subjectCell.appendChild(zeMessage3);
@@ -418,30 +435,45 @@ function addInboxRow(tableID, message, i) {
       }
 
     } else {
-      if (message.message.subject === 'Request to book available slot!' && message.message.sender === '00000000000000000000000a') {
-        subjectCell.removeChild(br);
-        subjectCell.removeChild(paragraph);
-        subjectCell.removeChild(br);
-        subjectCell.removeChild(zeMessage1);
-        subjectCell.removeChild(zeMessage2);
-        subjectCell.removeChild(zeMessage3);
-        subjectCell.removeChild(slotStart);
-        subjectCell.removeChild(zeMessage4);
-        subjectCell.removeChild(slotEnd);
-        subjectCell.removeChild(zeMessage5);
+      if (message.message.subject === 'Request to book available slot!' && message.message.sender === '00000000000000000000000a' && e.target !==zeMessage2 && e.target !== btnAcceptBooking && e.target !== btnRefuseBooking) {
 
-        subjectCell.removeChild(br);
-        subjectCell.removeChild(btnAcceptBooking);
+        while (subjectCell.firstChild) {
+            subjectCell.removeChild(subjectCell.firstChild);
+        }
+        subjectCell.appendChild(subject);
 
-        subjectCell.removeChild(btnRefuseBooking);
         message.click = false;
 
-      } else {
+      } else if (e.target !==zeMessage2 && e.target !== btnAcceptBooking && e.target !== btnRefuseBooking){
         subjectCell.removeChild(br);
         subjectCell.removeChild(paragraph);
         subjectCell.removeChild(zeMessage);
         message.click = false;
 
+      } else if (e.target === btnAcceptBooking){
+        console.log(modifiedMessage[8]);
+        fetch('/booking/' + modifiedMessage[8] + '/booked/' + true,
+        {
+            method: "PUT",
+            headers: {
+              'Accept': 'application/json',
+              'Authorization': 'whatever-you-want',
+              'Content-Type': 'application/json'
+            },
+            credentials: "same-origin"
+        })
+
+      } else if (e.target === btnRefuseBooking) {
+        fetch('/booking/' + modifiedMessage[8] + '/booked/' + false,
+        {
+            method: "PUT",
+            headers: {
+              'Accept': 'application/json',
+              'Authorization': 'whatever-you-want',
+              'Content-Type': 'application/json'
+            },
+            credentials: "same-origin"
+        })
       }
     }
   })
