@@ -130,8 +130,6 @@ $( document ).ready(function() {
       var freeEvents = response.calendar.free.filter(event => !~bookedEvents.indexOf(event));
       bookedEvents.map(event => event.title = 'booked!');
       bookedEvents.map(event => event.editable = false);
-      console.log(bookedEvents);
-      console.log(freeEvents);
 
       $('#calendar').fullCalendar({
 
@@ -246,10 +244,21 @@ $( document ).ready(function() {
         pdfPara.appendChild(canvasPara);
         postPDF('../' + res[0].profile.diplomas[dip].source, dip);
       };
+      var bookedEvents = res[0].calendar.free.filter(event => event.booked === true);
+      var freeEvents = res[0].calendar.free.filter(event => !~bookedEvents.indexOf(event));
+      bookedEvents.map(event => event.title = 'booked!');
+      bookedEvents.map(event => event.editable = false);
 
       $('#calendar').fullCalendar({
 
-        events: res[0].calendar.free,
+        eventSources: [{
+          events: freeEvents
+        },
+        {
+          events: bookedEvents,
+          color: 'red'
+        }],
+
 
         weekNumberCalculation: "ISO",
         weekNumbers: true,
@@ -258,48 +267,56 @@ $( document ).ready(function() {
         allDaySlot: false,
         slotDuration: '01:00:00',
         eventClick: function(calEvent, jsEvent, view) {
+          console.log('hi there')
           userf = fetch('/account/getUser',
           {
             method: 'get',
             credentials: 'same-origin'
           })
           .then(function(response) {
-            return response.json();
-          })
-          .then(function(response) {
-            user = response;
-            userinfo = res;
-            book = confirm('Do you want to book the slot?')
-            if (book) {
-              //check if the slot is Available
-              if (!calEvent.title == 'available') {
-                alert('Sorry buddy. That slot is not available');
-                return
-              } else if (typeof user == 'undefined') {
-                alert('Please log in or sign up to book a spot.');
-                return
-              } else {
-                alert('ok! Request to book Sent!');
-                delete calEvent.source;
-                bookingRequest = {
-                  userInfo: response,
-                  user: res[0],
-                  slot: calEvent
-                };
-                fetch("/account/bookSlot",
-                {
-                    method: "POST",
-                    headers: {
-                      'Accept': 'application/json',
-                      'Authorization': 'whatever-you-want',
-                      'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(bookingRequest),
-                    credentials: "same-origin"
-                });
-                // bookingMessage =
-                // sendMessage(sender, recipient, subject, message)
-              }
+            if (response.redirected) {
+              alert('log in pls');
+              window.location = '/login';
+            } else {
+              console.log(response);
+              return response.json()
+
+              .then(function(response) {
+                user = response;
+                userinfo = res;
+                console.log(userinfo);
+                console.log(user);
+                book = confirm('Do you want to book the slot?')
+                if (book) {
+                  //check if the slot is Available
+                  if (calEvent.title !== 'Available') {
+                    alert('Sorry buddy. That slot is not available');
+                    return
+                  } else if (typeof user == 'undefined') {
+                    alert('Please log in or sign up to book a spot.');
+                    return
+                  } else {
+                    alert('ok! Request to book Sent!');
+                    delete calEvent.source;
+                    bookingRequest = {
+                      userInfo: response,
+                      user: res[0],
+                      slot: calEvent
+                    };
+                    fetch("/account/bookSlot",
+                    {
+                        method: "POST",
+                        headers: {
+                          'Accept': 'application/json',
+                          'Authorization': 'whatever-you-want',
+                          'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(bookingRequest),
+                        credentials: "same-origin"
+                    });
+                  }
+                }
+              });
             }
           });
         }

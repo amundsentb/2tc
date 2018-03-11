@@ -161,6 +161,8 @@ exports.postUpdateProfile = (req, res, next) => {
 /* Just a route to get the user in js*/
 
 exports.getUser = (req, res, next) => {
+
+  
   res.json(req.user);
 }
 
