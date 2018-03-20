@@ -84,11 +84,11 @@ $( document ).ready(function() {
       return response.json();
     })
     .then(function(response) {
-        checks = response.profile.quals.split(',')
-        for (var check of checks) {
-          checkit = document.getElementById(check);
-          checkit.checked = true;
-        }
+      checks = response.profile.quals.split(',')
+      for (var check of checks) {
+        checkit = document.getElementById(check);
+        checkit.checked = true;
+      }
     });
 
     var qualList = [];
@@ -125,7 +125,6 @@ $( document ).ready(function() {
       return response.json();
     })
     .then(function(response) {
-
       var bookedEvents = response.calendar.free.filter(event => event.booked === true);
       var freeEvents = response.calendar.free.filter(event => !~bookedEvents.indexOf(event));
       bookedEvents.map(event => event.title = 'booked!');
@@ -206,6 +205,7 @@ $( document ).ready(function() {
 
   else if (document.location.pathname.indexOf('/users/') === 0) {
     idNumber = location.href.split('/')[4];
+
     usere = fetch('/getUserInfo/' + location.href.split('/')[4],
     {
       method: 'get',
@@ -282,17 +282,17 @@ $( document ).ready(function() {
               return response.json()
 
               .then(function(response) {
-                user = response;
+                userbooker = response;
                 userinfo = res;
                 console.log(userinfo);
-                console.log(user);
+                console.log(userbooker);
                 book = confirm('Do you want to book the slot?')
                 if (book) {
                   //check if the slot is Available
                   if (calEvent.title !== 'Available') {
                     alert('Sorry buddy. That slot is not available');
                     return
-                  } else if (typeof user == 'undefined') {
+                  } else if (typeof userbooker == 'undefined') {
                     alert('Please log in or sign up to book a spot.');
                     return
                   } else {
@@ -321,11 +321,31 @@ $( document ).ready(function() {
           });
         }
       });
+
+      if (typeof res[0].profile.quals !== 'undefined') {
+
+        if  ( typeof res[0].profile.quals === 'string' ) {
+          arr = res[0].profile.quals.split(',');
+        }
+        for (var qual of arr) {
+          anchor = document.createElement('a');
+
+          if (qual.slice(-1) == 1) {
+            addBadge(qual, 'primary');
+          } else if (qual.slice(-1) == 2) {
+            addBadge(qual, 'warning');
+          } else if (qual.slice(-1) == 3) {
+            addBadge(qual, 'success');
+          } else {
+          }
+        }
+      }
+
     });
   }
 
   else if (window.location.pathname=='/inbox') {
-    user = fetch('/getUserAndMessages',
+    userInbox = fetch('/getUserAndMessages',
     {
       method: 'get',
       credentials: 'same-origin'
@@ -344,6 +364,145 @@ $( document ).ready(function() {
       }
     });
   }
+
+  else if (window.location.pathname=='/') {
+
+    let userCardDiv = document.getElementById('userCardsGoesHere');
+    users.map((user) => {
+      let exDiv1 = document.createElement('div');
+      exDiv1.setAttribute('class', 'card');
+      let exCardImg1 = document.createElement('img')
+      exCardImg1.setAttribute('class', 'card-img-top');
+      exCardImg1.setAttribute('src', user.profile.picture);
+      exCardImg1.setAttribute('href', 'users/' + user._id);
+      exCardImg1.setAttribute('alt', 'card image cap');
+      exCardImg1.setAttribute('height', '150');
+      exCardImg1.setAttribute('width', '100');
+      exDiv1.appendChild(exCardImg1);
+      let exCardBody = document.createElement('div');
+      exCardBody.setAttribute('class', 'card-body');
+      let exh4 = document.createElement('h4');
+      exh4.setAttribute('class', 'card-title');
+      exh4.setAttribute('href', 'users/' + user._id);
+      exh4.innerHTML = user.profile.name;
+      let exh6 = document.createElement('h6');
+      exh6.setAttribute('class', 'card-subtitle');
+      exh6.setAttribute('class', 'mb-2');
+
+      let exBadgeList = document.createElement('div')
+      if (typeof user.profile.quals !== 'undefined') {
+
+        if  ( typeof user.profile.quals === 'string' ) {
+          arr = user.profile.quals.split(',');
+        }
+        for (var qual of arr) {
+          anchor = document.createElement('a');
+
+          if (qual.slice(-1) == 1) {
+            anchor = document.createElement('a');
+            sumtex = document.createTextNode(qual);
+            anchor.appendChild(sumtex);
+            anchor.className = "badge badge-primary badge-pill";
+            anchor.href = "#";
+            exBadgeList.appendChild(anchor);
+          } else if (qual.slice(-1) == 2) {
+            anchor = document.createElement('a');
+            sumtex = document.createTextNode(qual);
+            anchor.appendChild(sumtex);
+            anchor.className = "badge badge-warning badge-pill";
+            anchor.href = "#";
+            exBadgeList.appendChild(anchor);
+          } else if (qual.slice(-1) == 3) {
+            anchor = document.createElement('a');
+            sumtex = document.createTextNode(qual);
+            anchor.appendChild(sumtex);
+            anchor.className = "badge badge-success badge-pill";
+            anchor.href = "#";
+            exBadgeList.appendChild(anchor);
+          }
+        }
+      }
+
+      exAbout = document.createElement('p');
+      exAbout.setAttribute('class', 'card-text');
+      exAbout.innerHTML = user.profile.about;
+      exInterests = document.createElement('p');
+      exInterests.setAttribute('class', 'card-text');
+      exInterests.innerHTML = user.profile.interests;
+      exVisitBtn = document.createElement('a');
+      exVisitBtn.setAttribute('class', 'btn btn-primary')
+      exVisitBtn.setAttribute('href', '/users/' + user._id)
+      console.log(exVisitBtn);
+      exVisitBtn.innerHTML = 'Visit';
+      exCardBody.appendChild(exh4);
+      exCardBody.appendChild(exh6);
+      exCardBody.appendChild(exBadgeList);
+      exCardBody.appendChild(exAbout);
+      exCardBody.appendChild(exInterests);
+      exCardBody.appendChild(exVisitBtn);
+      exDiv1.appendChild(exCardBody);
+      userCardDiv.appendChild(exDiv1);
+
+    })
+
+    /**
+    each userCard in users
+      .card
+        img.card-img-top(src=userCard.profile.picture, href='users/' + userCard._id, alt='Card image cap', height='150', width='100')
+        .card-body
+          h4.card-title(href='users/' + userCard._id)= userCard.profile.name
+          h6.card-subtitle.mb-2
+          div(id = 'badgelist_' + userCard._id)
+          p.card-text= userCard.profile.about
+          p.card-text= userCard.profile.interests
+          a.btn.btn-primary(href='/users/' + userCard._id) Visit
+
+    if (typeof userCard.quals !== 'undefined') {
+
+      if  ( typeof userCard.quals === 'string' ) {
+        arr = userCard.quals.split(',');
+      }
+      for (var qual of arr) {
+        anchor = document.createElement('a');
+
+        if (qual.slice(-1) == 1) {
+          badges = document.getElementById('badgeList_')
+          anchor = document.createElement('a');
+          sumtex = document.createTextNode(qual);
+          anchor.appendChild(sumtex);
+          anchor.className = "badge badge-" +colour + " badge-pill";
+          anchor.href = "#";
+          child1 = badges.appendChild(anchor);
+        } else if (qual.slice(-1) == 2) {
+          addBadge(qual, 'warning');
+        } else if (qual.slice(-1) == 3) {
+          addBadge(qual, 'success');
+        } else {
+        }
+      }
+    } */
+
+
+  }
+
+  const headerInbox = document.getElementById('headerInbox');
+  if (user !== null) {
+    const getUnreads = setInterval(function(){
+    fetch('/message/numberUnread', {
+      method: 'get',
+      credentials: 'same-origin'
+    })
+    .then(function(res) {
+      return res.json();
+    })
+    .then(function(res) {
+      console.log(res);
+      headerInbox.innerText = res;
+    })
+  }, 60000);
+  }
+// If you ever want to stop it...  clearInterval(requestLoop)
+
 });
 
 
@@ -479,6 +638,7 @@ function addInboxRow(tableID, message, i) {
             },
             credentials: "same-origin"
         })
+        .then(alert('ok! Booking accepted'))
 
       } else if (e.target === btnRefuseBooking) {
         fetch('/booking/' + modifiedMessage[8] + '/booked/' + false,
@@ -491,6 +651,7 @@ function addInboxRow(tableID, message, i) {
             },
             credentials: "same-origin"
         })
+        .then(alert('ok! booking refused'))
       }
     }
   })

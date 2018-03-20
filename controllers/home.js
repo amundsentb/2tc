@@ -9,7 +9,6 @@ exports.index = (req, res) => {
   User.find({email: /example/i}, 'profile', function(err, users) {
     res.render('home', {
       users: users,
-      user: req.user
     });
   })
 // load the index.pug file

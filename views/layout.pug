@@ -35,8 +35,8 @@ html
     script(src='/hummingbird-treeview/hummingbird-treeview.js')
     script(src='/fullcalendar/dist/fullcalendar.js')
     script(src='/pdfjs-dist/build/pdf.js')
-
-
+    script.
+      var user = !{JSON.stringify(user, (k, v) => v === undefined ? null : v)};
 
     // Google Analytics: change UA-XXXXX-X to be your site's ID
     script.

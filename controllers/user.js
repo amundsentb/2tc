@@ -116,7 +116,6 @@ exports.postSignup = (req, res, next) => {
 exports.getAccount = (req, res) => {
   res.render('account/profile', {
     title: 'Account Management',
-    user: req.user
   });
 };
 
@@ -162,7 +161,7 @@ exports.postUpdateProfile = (req, res, next) => {
 
 exports.getUser = (req, res, next) => {
 
-  
+
   res.json(req.user);
 }
 

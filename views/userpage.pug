@@ -16,7 +16,8 @@ block content
         p #{userinfo.profile.website}
         p #{userinfo.profile.about}
         p #{userinfo.profile.interests}
-        p #{userinfo.profile.quals}
+        #badgeList
+
 
         button.btn.btn-primary(type='button', data-toggle='modal', data-target='#exampleModal', data-whatever='@getbootstrap') Send a message to #{userinfo.profile.name}
         #exampleModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='exampleModalLabel', aria-hidden='true')

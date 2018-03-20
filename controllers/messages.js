@@ -41,6 +41,16 @@ exports.getUserAndMessages = (req, res) => {
 
 }
 
+exports.getUnreadNumber = (req, res) => {
+  Message.count({
+    recipient: req.user._id,
+    seen: false,
+  }, function(err, count) {
+    if (err) {console.log(err); next();}
+    res.json(count);
+  })
+}
+
 exports.putMessageSeen = (req, res) => {
   Message.findByIdAndUpdate(req.params.id, {seen: req.params.seenBool}, {new:true},
   function(err, message) {
