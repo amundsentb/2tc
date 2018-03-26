@@ -1,5 +1,29 @@
 $( document ).ready(function() {
 
+  const searchUserByQual = (e) => {
+
+    console.log(e);
+
+    while (userSearchList.firstChild) {
+        userSearchList.removeChild(userSearchList.firstChild);
+    }
+
+    fetch('/getSearchByQual/' + e.currentTarget.id, {
+      method: 'get',
+      credentials: 'same-origin',
+    })
+    .then(function(res) {
+      return res.json();
+    })
+    .then(function(res) {
+      res.map((user) => {
+        populateUserCard(user, userSearchList);
+      });
+    })
+  }
+
+
+
   if (window.location.pathname=='/account') {
     var fileSelect = document.getElementById("fileSelect"),
       fileElem = document.getElementById("fileElem");
@@ -368,83 +392,11 @@ $( document ).ready(function() {
   else if (window.location.pathname=='/') {
 
     let userCardDiv = document.getElementById('userCardsGoesHere');
+
+
     users.map((user) => {
-      let exDiv1 = document.createElement('div');
-      exDiv1.setAttribute('class', 'card');
-      let exCardImg1 = document.createElement('img')
-      exCardImg1.setAttribute('class', 'card-img-top');
-      exCardImg1.setAttribute('src', user.profile.picture);
-      exCardImg1.setAttribute('href', 'users/' + user._id);
-      exCardImg1.setAttribute('alt', 'card image cap');
-      exCardImg1.setAttribute('height', '150');
-      exCardImg1.setAttribute('width', '100');
-      exDiv1.appendChild(exCardImg1);
-      let exCardBody = document.createElement('div');
-      exCardBody.setAttribute('class', 'card-body');
-      let exh4 = document.createElement('h4');
-      exh4.setAttribute('class', 'card-title');
-      exh4.setAttribute('href', 'users/' + user._id);
-      exh4.innerHTML = user.profile.name;
-      let exh6 = document.createElement('h6');
-      exh6.setAttribute('class', 'card-subtitle');
-      exh6.setAttribute('class', 'mb-2');
-
-      let exBadgeList = document.createElement('div')
-      if (typeof user.profile.quals !== 'undefined') {
-
-        if  ( typeof user.profile.quals === 'string' ) {
-          arr = user.profile.quals.split(',');
-        }
-        for (var qual of arr) {
-          anchor = document.createElement('a');
-
-          if (qual.slice(-1) == 1) {
-            anchor = document.createElement('a');
-            sumtex = document.createTextNode(qual);
-            anchor.appendChild(sumtex);
-            anchor.className = "badge badge-primary badge-pill";
-            anchor.href = "#";
-            exBadgeList.appendChild(anchor);
-          } else if (qual.slice(-1) == 2) {
-            anchor = document.createElement('a');
-            sumtex = document.createTextNode(qual);
-            anchor.appendChild(sumtex);
-            anchor.className = "badge badge-warning badge-pill";
-            anchor.href = "#";
-            exBadgeList.appendChild(anchor);
-          } else if (qual.slice(-1) == 3) {
-            anchor = document.createElement('a');
-            sumtex = document.createTextNode(qual);
-            anchor.appendChild(sumtex);
-            anchor.className = "badge badge-success badge-pill";
-            anchor.href = "#";
-            exBadgeList.appendChild(anchor);
-          }
-        }
-      }
-
-      exAbout = document.createElement('p');
-      exAbout.setAttribute('class', 'card-text');
-      exAbout.innerHTML = user.profile.about;
-      exInterests = document.createElement('p');
-      exInterests.setAttribute('class', 'card-text');
-      exInterests.innerHTML = user.profile.interests;
-      exVisitBtn = document.createElement('a');
-      exVisitBtn.setAttribute('class', 'btn btn-primary')
-      exVisitBtn.setAttribute('href', '/users/' + user._id)
-      console.log(exVisitBtn);
-      exVisitBtn.innerHTML = 'Visit';
-      exCardBody.appendChild(exh4);
-      exCardBody.appendChild(exh6);
-      exCardBody.appendChild(exBadgeList);
-      exCardBody.appendChild(exAbout);
-      exCardBody.appendChild(exInterests);
-      exCardBody.appendChild(exVisitBtn);
-      exDiv1.appendChild(exCardBody);
-      userCardDiv.appendChild(exDiv1);
-
-    })
-
+      populateUserCard(user, userCardDiv);
+    });
     /**
     each userCard in users
       .card
@@ -484,6 +436,193 @@ $( document ).ready(function() {
 
 
   }
+
+  else if (window.location.pathname=='/search') {
+
+    const userSearchByNameInput = document.getElementById('userSearchByNameInput');
+    const userSearchByNameBtn = document.getElementById('userSearchByNameBtn');
+    const userSearchByNameList = document.getElementById('userSearchByNameList');
+
+    userSearchByNameBtn.addEventListener('click', function() {
+
+      console.log(userSearchList);
+
+      while (userSearchList.firstChild) {
+          userSearchList.removeChild(userSearchList.firstChild);
+      }
+
+      fetch('/getSearchByUserName/' + userSearchByNameInput.value, {
+        method: 'get',
+        credentials: 'same-origin',
+      })
+      .then(function(res) {
+        console.log(res);
+        return res.json();
+      })
+      .then(function(res) {
+        res.map((user) => {
+          populateUserCard(user, userSearchList);
+        });
+      });
+    });
+
+    const math1Btn = document.getElementById('math1Btn');
+    const math2Btn = document.getElementById('math2Btn');
+    const math3Btn = document.getElementById('math3Btn');
+    const phys1Btn = document.getElementById('phys1Btn');
+    const phys2Btn = document.getElementById('phys2Btn');
+    const phys3Btn = document.getElementById('phys3Btn');
+    const chem1Btn = document.getElementById('chem1Btn');
+    const chem2Btn = document.getElementById('chem2Btn');
+    const chem3Btn = document.getElementById('chem3Btn');
+    const salsa1Btn = document.getElementById('salsa1Btn');
+    const salsa2Btn = document.getElementById('salsa2Btn');
+    const salsa3Btn = document.getElementById('salsa3Btn');
+    const painting1Btn = document.getElementById('painting1Btn');
+    const painting2Btn = document.getElementById('painting2Btn');
+    const painting3Btn = document.getElementById('painting3Btn');
+    const yoga1Btn = document.getElementById('yoga1Btn');
+    const yoga2Btn = document.getElementById('yoga2Btn');
+    const yoga3Btn = document.getElementById('yoga3Btn');
+    const football1Btn = document.getElementById('football1Btn');
+    const football2Btn = document.getElementById('football2Btn');
+    const football3Btn = document.getElementById('football3Btn');
+    const golf1Btn = document.getElementById('golf1Btn');
+    const golf2Btn = document.getElementById('golf2Btn');
+    const golf3Btn = document.getElementById('golf3Btn');
+    const swimming1Btn = document.getElementById('swimming1Btn');
+    const swimming2Btn = document.getElementById('swimming2Btn');
+    const swimming3Btn = document.getElementById('swimming3Btn');
+    const plumbing1Btn = document.getElementById('plumbing1Btn');
+    const plumbing2Btn = document.getElementById('plumbing2Btn');
+    const plumbing3Btn = document.getElementById('plumbing3Btn');
+    const sewing1Btn = document.getElementById('sewing1Btn');
+    const sewing2Btn = document.getElementById('sewing2Btn');
+    const sewing3Btn = document.getElementById('sewing3Btn');
+    const welding1Btn = document.getElementById('welding1Btn');
+    const welding2Btn = document.getElementById('welding2Btn');
+    const welding3Btn = document.getElementById('welding3Btn');
+
+
+    const userSearchList = document.getElementById('userSearchList');
+
+    math1Btn.addEventListener('click', searchUserByQual);
+    math2Btn.addEventListener('click', searchUserByQual);
+    math3Btn.addEventListener('click', searchUserByQual);
+    phys1Btn.addEventListener('click', searchUserByQual);
+    phys2Btn.addEventListener('click', searchUserByQual);
+    phys3Btn.addEventListener('click', searchUserByQual);
+    chem1Btn.addEventListener('click', searchUserByQual);
+    chem2Btn.addEventListener('click', searchUserByQual);
+    chem3Btn.addEventListener('click', searchUserByQual);
+    salsa1Btn.addEventListener('click', searchUserByQual);
+    salsa2Btn.addEventListener('click', searchUserByQual);
+    salsa3Btn.addEventListener('click', searchUserByQual);
+    painting1Btn.addEventListener('click', searchUserByQual);
+    painting2Btn.addEventListener('click', searchUserByQual);
+    painting3Btn.addEventListener('click', searchUserByQual);
+    yoga1Btn.addEventListener('click', searchUserByQual);
+    yoga2Btn.addEventListener('click', searchUserByQual);
+    yoga3Btn.addEventListener('click', searchUserByQual);
+    football1Btn.addEventListener('click', searchUserByQual);
+    football2Btn.addEventListener('click', searchUserByQual);
+    football3Btn.addEventListener('click', searchUserByQual);
+    golf1Btn.addEventListener('click', searchUserByQual);
+    golf2Btn.addEventListener('click', searchUserByQual);
+    golf3Btn.addEventListener('click', searchUserByQual);
+    swimming1Btn.addEventListener('click', searchUserByQual);
+    swimming2Btn.addEventListener('click', searchUserByQual);
+    swimming3Btn.addEventListener('click', searchUserByQual);
+    plumbing1Btn.addEventListener('click', searchUserByQual);
+    plumbing2Btn.addEventListener('click', searchUserByQual);
+    plumbing3Btn.addEventListener('click', searchUserByQual);
+    sewing1Btn.addEventListener('click', searchUserByQual);
+    sewing2Btn.addEventListener('click', searchUserByQual);
+    sewing3Btn.addEventListener('click', searchUserByQual);
+    welding1Btn.addEventListener('click', searchUserByQual);
+    welding2Btn.addEventListener('click', searchUserByQual);
+    welding3Btn.addEventListener('click', searchUserByQual);
+
+  }
+
+   function populateUserCard(user, userCardDiv) {
+     console.log('hi');
+     let exDiv1 = document.createElement('div');
+     exDiv1.setAttribute('class', 'card');
+     let exCardImg1 = document.createElement('img')
+     exCardImg1.setAttribute('class', 'card-img-top');
+     exCardImg1.setAttribute('src', user.profile.picture);
+     exCardImg1.setAttribute('href', 'users/' + user._id);
+     exCardImg1.setAttribute('alt', 'card image cap');
+     exCardImg1.setAttribute('height', '150');
+     exCardImg1.setAttribute('width', '100');
+     exDiv1.appendChild(exCardImg1);
+     let exCardBody = document.createElement('div');
+     exCardBody.setAttribute('class', 'card-body');
+     let exh4 = document.createElement('h4');
+     exh4.setAttribute('class', 'card-title');
+     exh4.setAttribute('href', 'users/' + user._id);
+     exh4.innerHTML = user.profile.name;
+     let exh6 = document.createElement('h6');
+     exh6.setAttribute('class', 'card-subtitle');
+     exh6.setAttribute('class', 'mb-2');
+
+     let exBadgeList = document.createElement('div')
+     if (typeof user.profile.quals !== 'undefined') {
+
+       if  ( typeof user.profile.quals === 'string' ) {
+         arr = user.profile.quals.split(',');
+       }
+       for (var qual of arr) {
+         anchor = document.createElement('a');
+
+         if (qual.slice(-1) == 1) {
+           anchor = document.createElement('a');
+           sumtex = document.createTextNode(qual);
+           anchor.appendChild(sumtex);
+           anchor.className = "badge badge-primary badge-pill";
+           anchor.href = "#";
+           exBadgeList.appendChild(anchor);
+         } else if (qual.slice(-1) == 2) {
+           anchor = document.createElement('a');
+           sumtex = document.createTextNode(qual);
+           anchor.appendChild(sumtex);
+           anchor.className = "badge badge-warning badge-pill";
+           anchor.href = "#";
+           exBadgeList.appendChild(anchor);
+         } else if (qual.slice(-1) == 3) {
+           anchor = document.createElement('a');
+           sumtex = document.createTextNode(qual);
+           anchor.appendChild(sumtex);
+           anchor.className = "badge badge-success badge-pill";
+           anchor.href = "#";
+           exBadgeList.appendChild(anchor);
+         }
+       }
+     }
+
+     exAbout = document.createElement('p');
+     exAbout.setAttribute('class', 'card-text');
+     exAbout.innerHTML = user.profile.about;
+     exInterests = document.createElement('p');
+     exInterests.setAttribute('class', 'card-text');
+     exInterests.innerHTML = user.profile.interests;
+     exVisitBtn = document.createElement('a');
+     exVisitBtn.setAttribute('class', 'btn btn-primary')
+     exVisitBtn.setAttribute('href', '/users/' + user._id)
+     console.log(exVisitBtn);
+     exVisitBtn.innerHTML = 'Visit';
+     exCardBody.appendChild(exh4);
+     exCardBody.appendChild(exh6);
+     exCardBody.appendChild(exBadgeList);
+     exCardBody.appendChild(exAbout);
+     exCardBody.appendChild(exInterests);
+     exCardBody.appendChild(exVisitBtn);
+     exDiv1.appendChild(exCardBody);
+     userCardDiv.appendChild(exDiv1);
+
+   }
+
 
   const headerInbox = document.getElementById('headerInbox');
   if (user !== null) {

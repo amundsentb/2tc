@@ -19,6 +19,7 @@ const expressValidator = require('express-validator');
 const expressStatusMonitor = require('express-status-monitor');
 const sass = require('node-sass-middleware');
 const multer = require('multer');
+// const fuzzysort = require('fuzzysort');
 
 const upload = multer({ dest: path.join(__dirname, 'uploads') });
 
@@ -35,6 +36,7 @@ const userController = require('./controllers/user');
 const apiController = require('./controllers/api');
 const contactController = require('./controllers/contact');
 const messageController = require('./controllers/messages');
+const searchController = require('./controllers/search');
 
 /**
  * API keys and Passport configuration.
@@ -145,6 +147,15 @@ app.use((req, res, next) => {
   else if (req.path === '/message/numberUnread') {
     next();
   }
+  else if (req.path === '/search') {
+    next();
+  }
+  else if (req.path.indexOf('/getSearchByQual/') === 0)  {
+    next();
+  }
+
+
+
 
   else {
     lusca.csrf()(req, res, next);
@@ -214,6 +225,10 @@ app.put('/message/:id/seen/:seenBool', passportConfig.isAuthenticated, messageCo
 app.get('/message/numberUnread', passportConfig.isAuthenticated, messageController.getUnreadNumber)
 
 app.put('/booking/:id/booked/:bookedBool', passportConfig.isAuthenticated, userController.putBookingBooked)
+
+app.get('/search', searchController.getSearch)
+app.get('/getSearchByQual/:qual', searchController.getSearchByQual)
+app.get('/getSearchByUserName/:name', searchController.getSearchByName)
 
 
 

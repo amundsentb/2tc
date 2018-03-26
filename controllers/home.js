@@ -8,6 +8,7 @@ const User = require('../models/User');
 exports.index = (req, res) => {
   User.find({email: /example/i}, 'profile', function(err, users) {
     res.render('home', {
+      title: 'Home',
       users: users,
     });
   })

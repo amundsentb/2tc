@@ -14,6 +14,9 @@ navbar.navbar-expand-md.navbar-light.bg-lights
         a.nav-link(href='/contact') Contact
       li.nav-item
         a.nav-link(href='/status') Status
+      li.nav-item(class=(title === 'Search users') ? 'active' : undefined)
+        a.nav-link(href='/search') Search
+
     ul.navbar-nav
       if !user
         li.nav-item(class=(title === 'Login') ? 'active' : undefined)
